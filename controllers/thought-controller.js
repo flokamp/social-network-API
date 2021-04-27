@@ -17,15 +17,15 @@ const thoughtController = {
 			});
 	},
 
-	// get one user by id
-	getUserById({ params }, res) {
-		User.findOne({ _id: params.id })
+	// get one thought by id
+	getThoughtById({ params }, res) {
+		Thought.findOne({ _id: params.id })
 			.populate({
-				path: "thoughts",
+				path: "reactions",
 				select: "-__v",
 			})
 			.select("-__v")
-			.then((dbUserData) => res.json(dbUserData))
+			.then((dbThoughtData) => res.json(dbThoughtData))
 			.catch((err) => {
 				console.log(err);
 				res.sendStatus(400);
@@ -92,6 +92,20 @@ const thoughtController = {
 			})
 			.catch((err) => res.json(err));
 	},
+
+	// update user by id
+	updateThought({ params, body }, res) {
+		Thought.findOneAndUpdate({ _id: params.id }, body, { new: true })
+			.then((dbThoughtData) => {
+				if (!dbThoughData) {
+					res.status(404).json({ message: "No thought found with this id!" });
+					return;
+				}
+				res.json(dbThoughtData);
+			})
+			.catch((err) => res.json(err));
+	},
+
 	// remove Reaction
 	removeReaction({ params }, res) {
 		Thought.findOneAndUpdate(
